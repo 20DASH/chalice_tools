@@ -2,14 +2,9 @@
 chalice_tools is a utility package designed to simplify common tasks when working with the AWS Chalice framework. It provides helper functions for handling CORS responses and loading Chalice configuration.
 
 ## Installation
-You can install chalice_tools directly from GitHub using pip:
-
-```bash
-pip install git+https://github.com/20DASH/chalice_tools.git
-```
-Add it to your requirements.txt file:
+Add this line to your requirements.txt file:
     
-    git+https://github.com/20DASH/chalice_tools.git
+    chalice_tools @ git+https://github.com/20DASH/chalice_tools
 
 ## Functions
 
