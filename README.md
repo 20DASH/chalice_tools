@@ -5,11 +5,11 @@ chalice_tools is a utility package designed to simplify common tasks when workin
 You can install chalice_tools directly from GitHub using pip:
 
 ```bash
-pip install git+https://github.com/20DASH/chalice-tools.git
+pip install git+https://github.com/20DASH/chalice_tools.git
 ```
 Add it to your requirements.txt file:
     
-    git+https://github.com/20DASH/chalice-tools.git
+    git+https://github.com/20DASH/chalice_tools.git
 
 ## Functions
 
