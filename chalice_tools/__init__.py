@@ -1,2 +1,2 @@
 
-from chalice_tools import *
+from .chalice_tools import *
