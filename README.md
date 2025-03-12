@@ -47,6 +47,10 @@ import os
 print(os.getenv("MY_ENV_VAR"))
 ```
 
+`get_current_stage(options=["prod", "dev"])`
+
+Returns a str from the options argument if any of them is in the AWS lambda function name - meaning it is the current stage (unless it has a name that includes it). If any, like if running local, will return None
+
 ## Contributing
 Contributions are welcome! If you'd like to contribute, please:
 
