@@ -6,6 +6,32 @@ Add this line to your requirements.txt file:
     
     chalice_tools @ git+https://github.com/20DASH/chalice_tools
 
+## Decorators
+
+`@no_cors_route`
+
+Defines a function as a chalice no-cors route. Similar to chalice's native @app.route, and can receive all the same named arguments except for 'cors'. The first positional argument is optional; if present, will define the endpoint, else the function name will be the endpoind.
+
+All the examples below are equivalent:
+
+```python
+# simplest
+@no_cors_route
+def some_route():
+
+# with parenthesis
+@no_cors_route()
+def some_route():
+
+# endpoint specified
+@no_cors_route("some_route")
+def some_route():
+
+# extra args
+@no_cors_route(methods=["GET"])
+def some_route():
+```
+
 ## Functions
 
 `no_cors_response(body: dict, status_code=200)`

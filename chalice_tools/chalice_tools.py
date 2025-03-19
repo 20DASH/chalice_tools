@@ -1,3 +1,6 @@
+from chalice import CORSConfig
+
+
 def no_cors_response(body: dict, status_code=200):
     from chalice import Response
 
@@ -10,6 +13,57 @@ def no_cors_response(body: dict, status_code=200):
             "Access-Control-Allow-Methods": "POST, GET, OPTIONS, DELETE",
         },
     )
+
+
+cors_config = CORSConfig(
+    allow_origin="*",
+    allow_headers="*",
+    max_age=600,
+    expose_headers="*",
+    allow_credentials=True,
+)
+
+
+def no_cors_route(*args, **kwargs):
+    from functools import wraps
+
+    # Remove 'cors' from kwargs to prevent conflicts
+    kwargs.pop("cors", None)
+
+    def decorator(func):
+        # Determine the path
+        if args and isinstance(args[0], str):
+            path = args[0]
+        else:
+            path = f"/{func.__name__}"
+
+        from app import app
+
+        # Apply Chalice route with the determined path and remaining kwargs
+        @app.route(path, cors=cors_config, **kwargs)
+        @wraps(func)
+        def wrapped_function(*args, **kwargs):
+            original_response = func(*args, **kwargs)
+            # Handle cases where the function returns a tuple (body, status_code)
+            if isinstance(original_response, tuple) and len(original_response) == 2:
+                body, status_code = original_response
+                return no_cors_response(body, status_code)
+            else:
+                return no_cors_response(original_response)
+
+        return wrapped_function
+
+    # Check if decorator is called without parentheses
+    if not args or not isinstance(args[0], str):
+        if args and callable(args[0]):
+            # Case: @nocorsroute
+            return decorator(args[0])
+        else:
+            # Case: @nocorsroute() with other parameters
+            return decorator
+    else:
+        # Case: @nocorsroute('/path', methods=['GET'])
+        return decorator
 
 
 def load_chalice_config(stage="dev"):
