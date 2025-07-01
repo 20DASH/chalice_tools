@@ -1,4 +1,4 @@
-from chalice import CORSConfig
+import chalice
 
 
 def no_cors_response(body: dict, status_code=200):
@@ -15,7 +15,7 @@ def no_cors_response(body: dict, status_code=200):
     )
 
 
-cors_config = CORSConfig(
+cors_config = chalice.CORSConfig(
     allow_origin="*",
     allow_headers="*",
     max_age=600,
@@ -37,7 +37,7 @@ def no_cors_route(*args, **kwargs):
         else:
             path = f"/{func.__name__}"
 
-        from app import app
+        from app import app  # type: ignore
 
         # Apply Chalice route with the determined path and remaining kwargs
         @app.route(path, cors=cors_config, **kwargs)
@@ -45,7 +45,10 @@ def no_cors_route(*args, **kwargs):
         def wrapped_function(*args, **kwargs):
             original_response = func(*args, **kwargs)
             # Handle cases where the function returns a tuple (body, status_code)
-            if isinstance(original_response, tuple) and len(original_response) == 2:
+            if (
+                isinstance(original_response, tuple)
+                and len(original_response) == 2
+            ):
                 body, status_code = original_response
                 return no_cors_response(body, status_code)
             else:
@@ -77,7 +80,9 @@ def load_chalice_config(stage="dev"):
         os.environ[key] = value
 
     stage_env_vars = (
-        config.get("stages", {}).get(stage, {}).get("environment_variables", {})
+        config.get("stages", {})
+        .get(stage, {})
+        .get("environment_variables", {})
     )
     for key, value in stage_env_vars.items():
         os.environ[key] = value
@@ -92,3 +97,22 @@ def get_current_stage(options=["prod", "dev"]):
             return opt
 
     return None
+
+
+class MissingArgument(Exception):
+    def __init__(self, arg_name):
+        self.response = chalice.Response(
+            body={"error": f'Missing "{arg_name}" field.'},
+            status_code=400,
+        )
+
+
+def ensure_arguments(request, *args):
+    if request.method == "GET":
+        source = request.query_params or {}
+    else:
+        source = request.json_body or {}
+
+    for arg in args:
+        if arg not in source:
+            raise MissingArgument(arg)

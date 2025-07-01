@@ -3,7 +3,7 @@ chalice_tools is a utility package designed to simplify common tasks when workin
 
 ## Installation
 Add this line to your requirements.txt file:
-    
+
     chalice_tools @ git+https://github.com/20DASH/chalice_tools
 
 ## Decorators
@@ -76,6 +76,19 @@ print(os.getenv("MY_ENV_VAR"))
 `get_current_stage(options=["prod", "dev"])`
 
 Returns a str from the options argument if any of them is in the AWS lambda function name - meaning it is the current stage (unless it has a name that includes it). If any, like if running local, will return None
+
+`ensure_arguments(request, *args)`
+
+If any of the args is not in the request, raise an error.
+
+Example:
+```python
+from chalice_tools import ensure_arguments, MissingArgument
+@no_cors_route
+def some_route():
+    request = app.current_request
+    ensure_arguments(request, "id", "name")
+```
 
 ## Contributing
 Contributions are welcome! If you'd like to contribute, please:
